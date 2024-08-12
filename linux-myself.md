@@ -70,11 +70,13 @@
   ` apt install bastet`
 
 
+
+
 ## 三、添加、修改或删除 DNS 服务器的地址
 
 `nano /etc/resolv.conf`
 
-![img](https://telegraph-image-12r.pages.dev/file/7777d3bcc6988e01b990d.png)
+​	![img](https://telegraph-image-12r.pages.dev/file/7777d3bcc6988e01b990d.png)
 
 
 
@@ -89,6 +91,34 @@
 >- **RO**: 表示设备或分区是只读的（read-only）还是可写的（read-write）。`ro` 表示只读，否则为空。
 >- **TYPE**: 设备类型，如 `disk`（磁盘）、`part`（分区）等。
 >- **MOUNTPOINT**: 如果分区被挂载，这里会显示挂载点。未挂载的分区这里为空。
+
+
+
+## 四、网卡配置
+
+### nmcli
+
+`apt install apt-file -y`
+
+`apt-file update`
+
+`apt-file search nmcli`
+
+`apt install network-manager -y`
+
+`nano NetworkManager.conf `
+
+>[main]
+>plugins=ifupdown,keyfile
+>
+>[ifupdown]
+>managed=True
+
+`systemctl restart NetworkManager`
+
+
+
+
 
 
 
@@ -160,49 +190,110 @@ enabled=1
 
 
 
+`systemctl disable firewalld.service `
+
+`nano /etc/selinux/config`
+
+![img](https://telegraph-image-12r.pages.dev/file/1acf8f314ff651108484c.png)
+
+`reboot`
 
 
-`nmcli` 用于配置和管理网络连接的命令行工具
 
->### 一、基本功能与用途
->
->1. 显示网络设备
->
->   ：
->
->   - 使用`nmcli device show`或`nmcli d`命令查看系统中所有的网络设备（如网卡、Wi-Fi适配器等）的详细信息，包括设备名称、类型、状态和连接状态等。
->
->2. 管理网络连接
->
->   ：
->
->   - 使用`nmcli connection show`或`nmcli c`命令显示所有的网络连接及其详细信息，包括连接名称、设备、IP地址等。
->   - 使用`nmcli connection up`命令启用一个连接，使用`nmcli connection down`命令禁用一个连接。
->   - 使用`nmcli connection add`命令添加新的网络连接，使用`nmcli connection modify`命令修改已有的连接配置，如设置连接的名称、设备、IP地址、DNS服务器等参数。
->
->3. 配置网络连接
->
->   ：
->
->   - nmcli支持配置各种类型的网络连接，包括有线连接、无线连接、VPN连接等。
->   - 可以配置连接的IP地址、子网掩码、网关、DNS服务器等参数。
->
->4. Wi-Fi设置
->
->   ：
->
->   - 使用`nmcli device wifi`命令显示可用的Wi-Fi网络。
->   - 使用`nmcli device wifi connect`命令连接到指定的Wi-Fi网络，并指定网络的SSID和密码等参数。
->
->5. 管理DNS和IP地址
->
->   ：
->
->   - 使用`nmcli connection modify`命令设置连接的DNS服务器和IP地址。
->
->6. 网络状态查询
->
->   ：
->
->   - 查询当前系统中的网络连接状态和网络设备信息，包括已连接的网络接口、IP地址、DNS服务器、网络连接类型等详细信息。
+## 三、配置网卡方式
+
+方式一：编辑文件
+
+```nano /etc/sysconfig/network-scripts/ifcfg-ens160```
+
+添加
+
+```bash
+IPADDR=192.168.7.66
+NETMASK=255.255.255.0
+DNS1=1.1.1.1
+DNS2=8.8.8.8
+GATEWAY=192.168.7.2
+PREFIX=24
+```
+
+方式二：nmcli
+
+1.创建
+
+`nmcli c 查看连接`
+
+`nmcli d 查看网卡设备`
+
+``` bash
+nmcli connection add type ethernet ifname ens160 ipv4.method manual con-name rainconnection ipv4.addresses "192.168.7.26/24" ipv4.gateway "192.168.7.2" ipv4.dns 8.8.8.8 autoconnect yes
+```
+
+`nmcli c modify ens160  autoconnect no`
+
+2.启用
+
+`nmcli connection up rainconnection  `
+
+
+
+3.更改
+
+`nmcli c modify rainconnection2 ipv4.addresses "192.168.7.31/24"`
+
+虚拟网卡
+
+`nmcli connection add con-name mybond0 type bond mode active-backup ipv4.addresses "192.168.7.30/24" ipv4.gateway "192.168.7.2" ipv4.dns 8.8.8.8`
+
+
+
+## 四、链路聚合
+
+- 主链路 虚拟网卡
+
+  ```nmcli connection add con-name new-bond ifname bond0 type bond mode active-backup ipv4.addresses   "192.168.7.30/24" ipv4.gateway "192.168.7.2" ipv4.dns 8.8.8.8  ipv4.method manual```
+
+
+
+- 网卡分链路  物理网卡
+
+  `nmcli connection  add con-name mybond0-224 ifname ens224 type bond-slave master bond0  `
+
+   `nmcli connection add con-name mybond0-160  ifname ens160 type bond-slave master bond0 `
+
+
+
+
+
+`yum install httpd -y`   安装
+
+`systemctl status httpd`
+
+`systemctl start  httpd`   启动http
+
+`ss -tunlp`   查看端口
+
+`curl 127.0.0.1`   本地访问
+
+
+
+开启防火墙
+
+`systemctl start firewalld.service `
+
+
+
+`cd /usr/lib/firewalld/services`
+
+`firewall-cmd  --list-all-zones `  查看所有策略
+
+`firewall-cmd  --list-all`  查看当前策略
+
+`firewall-cmd  --set-default-zone=public`  设置默认策略
+
+`firewall-cmd --permanent --zone=public --add-service=http `  添加服务
+
+`firewall-cmd reload ` 重载
+
+ 
 
