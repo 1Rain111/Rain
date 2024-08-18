@@ -167,7 +167,7 @@ sudo nmcli con up <连接名称>
 
 `nano /etc/resolv.conf`
 
-​	![img](https://telegraph-image-12r.pages.dev/file/7777d3bcc6988e01b990d.png)
+​	![img](MyLinux.assets/7777d3bcc6988e01b990d.png)
 
 #### hostnamectl 查询和更改系统的主机名以及相关的配置信息
 
@@ -454,7 +454,7 @@ enabled=1
 
 `nano /etc/selinux/config`
 
-![img](https://telegraph-image-12r.pages.dev/file/1acf8f314ff651108484c.png)
+![img](MyLinux.assets/1acf8f314ff651108484c.png)
 
 `reboot`
 
@@ -963,17 +963,7 @@ sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source addre
 
 
 
-
-
-6.
-
 UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaults        0 0
-
-
-
-
-
-
 
 
 
@@ -981,11 +971,11 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 
 
-![72360133909](C:\Users\rain2\AppData\Local\Temp\1723601339097.png)
+![72360133909](MyLinux.assets/1723601339097.png)
 
 
 
-![72360136318](C:\Users\rain2\AppData\Local\Temp\1723601363187.png)
+![72360136318](MyLinux.assets/1723601363187.png)
 
 
 
@@ -993,11 +983,11 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 新加硬盘作为虚拟分区使用    格式化启用 写入永久挂载
 
-![72360212813](C:\Users\rain2\AppData\Local\Temp\1723602128139.png)
+![72360212813](MyLinux.assets/1723602128139.png)
 
-![72360229000](C:\Users\rain2\AppData\Local\Temp\1723602290000.png)
+![72360229000](MyLinux.assets/1723602290000.png)
 
-​	![72360225531](C:\Users\rain2\AppData\Local\Temp\1723602255314.png)
+​	![72360225531](MyLinux.assets/1723602255314.png)
 
 
 
@@ -1599,7 +1589,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72369223710](C:\Users\rain2\AppData\Local\Temp\1723692237101.png)
+![72369223710](MyLinux.assets/1723692237101.png)
 
 
 
@@ -1607,11 +1597,11 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72369325445](C:\Users\rain2\AppData\Local\Temp\1723693254459.png)
+![72369325445](MyLinux.assets/1723693254459.png)
 
 
 
-![72369344717](C:\Users\rain2\AppData\Local\Temp\1723693447175.png)
+![72369344717](MyLinux.assets/1723693447175.png)
 
 
 
@@ -1635,11 +1625,11 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 创建httpd容器
 
-![72378768626](C:\Users\rain2\AppData\Local\Temp\1723787686267.png)
+![72378768626](MyLinux.assets/1723787686267-1723995744820.png)
 
 进入容器
 
-![72378783250](C:\Users\rain2\AppData\Local\Temp\1723787832508.png)
+![72378783250](MyLinux.assets/1723787832508-1723995741108.png)
 
 
 
@@ -1651,13 +1641,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72379110285](C:\Users\rain2\AppData\Local\Temp\1723791102855.png)
-
-
-
-!72379057925](C:\Users\rain2\AppData\Local\Temp\1723790579254.png
-
-## centOS8-Docker安装
+![72379110285](MyLinux.assets/1723791102855-1723995736495.png)
 
 
 
@@ -1761,10 +1745,6 @@ docker pull 192.168.7.66/xy_2024/xiayu@sha256:41fc97b410595d558767790c4f689f2afe
 ```
 
 
-
-
-
-![72399540991](MyLinux.assets/1723995409911.png)
 
 
 
