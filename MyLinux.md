@@ -29,6 +29,8 @@
 
   `nano /etc/apt/sources.list`
 
+  `https://www.cnblogs.com/smlile-you-me/p/17727308.html`
+
   * 华为镜像站
 
     ~~~bash
@@ -54,7 +56,26 @@
     deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-updates main non-free non-free-firmware contrib
     deb https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib
     deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib
+
+
+
+
     ```````
+
+  * 阿里云源
+
+    ```
+    deb https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib
+    deb-src https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib
+    deb https://mirrors.aliyun.com/debian-security/ bookworm-security main
+    deb-src https://mirrors.aliyun.com/debian-security/ bookworm-security main
+    deb https://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib
+    deb-src https://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib
+    deb https://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib
+    deb-src https://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib
+    ```
+
+    ​
 
 * 更新
 
@@ -862,7 +883,6 @@ sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source addre
 
 
 
-
 ### 5.格式化
 
 1. **列出所有分区**：使用 `lsblk` 或 `fdisk -l` 命令来列出系统中的所有分区。
@@ -977,7 +997,7 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 
 
-#  **swap交换分区**
+## swap交换分区
 
 
 
@@ -993,7 +1013,7 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 新加硬盘作为虚拟分区使用    格式化启用 写入永久挂载
 
-![72360212813](C:\Users\rain2\AppData\Local\Temp\1723602128139.png)
+![72360212813](MyLinux.assets/1723602128139-1724164343341.png)
 
 ![72360229000](C:\Users\rain2\AppData\Local\Temp\1723602290000.png)
 
@@ -1541,9 +1561,9 @@ LVM提供了非常灵活的磁盘管理功能，特别是在需要动态调整�
 
 
 
-## debian12-Docker安装
+## debian12-Docker
 
-### 手动安装
+### 安装
 
 更新 apt 包索引
 
@@ -1567,15 +1587,30 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-##  更换Docker镜像源
+###  更换Docker镜像源
 
-- nano /etc/docker/daemon.json
+- nano /etc/docker/daemon.json 加速器
 
-```
+```bash
 {
     "registry-mirrors": [
         "https://web3.185500.xyz:30008",
         "https://dqmpfwb6.mirror.aliyuncs.com"
+    ]
+}
+```
+
+
+
+- 网络加速镜像
+
+https://patzer0.com/archives/configure-docker-registry-mirrors-with-mirrors-available-in-cn-mainland
+
+```
+{
+    "registry-mirrors": [
+        "https://docker.1panel.live",
+        "https://hub.rat.dev"
     ]
 }
 ```
@@ -1655,17 +1690,9 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-!72379057925](C:\Users\rain2\AppData\Local\Temp\1723790579254.png
-
-## centOS8-Docker安装
 
 
-
-
-
-
-
-# Docker常用命令
+### Docker常用命令
 
 ```bash
 1.找镜像
@@ -1728,39 +1755,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
    
 ```
 
-
-
-
-
-### 部署相册
-
-1.访问网站`<https://docs.photoprism.app/getting-started/docker-compose/>`
-
-- wget https://dl.photoprism.app/docker/docker-compose.yml
-
-
-
-2.编辑 
-
-- nano docker-compose.yml
-
-```
-1. ports:
-      - "8888:2342"
-2.      
-environment:
-      PHOTOPRISM_ADMIN_USER: "admin"                 # admin login username
-      PHOTOPRISM_ADMIN_PASSWORD: "666"          # initial admin password (8-72 characters)
-      PHOTOPRISM_AUTH_MODE: "password"               # authentication mode (public, password)
-      PHOTOPRISM_SITE_URL: "http://localhost:8888/"  # server URL in the format "http(s)://domain.name(:port>
-3. - "/photo:/photoprism/originals"               # Original media files (DO NOT REMOVE)
-```
-
-3.包管理
-
-` docker compose -f docker-compose.yml up`
-
-# Harbor
+###  Harbor 镜像管理工具
 
 ```
 apt install unzip 
@@ -1807,108 +1802,154 @@ nano /etc/docker/daemon.json
 }
 拉取镜像
 docker pull 192.168.7.66/xy_2024/xiayu@sha256:41fc97b410595d558767790c4f689f2afe40ac532ad8544373ed1e3ee43f1ef9
+
 ```
+
+
+
+
+
+## docker部署
+
+###  部署相册
+
+1.访问网站`<https://docs.photoprism.app/getting-started/docker-compose/>`
+
+- wget https://dl.photoprism.app/docker/docker-compose.yml
+
+
+
+2.编辑 
+
+- nano docker-compose.yml
+
+```
+1. ports:
+      - "8888:2342"
+2.      
+environment:
+      PHOTOPRISM_ADMIN_USER: "admin"                 # admin login username
+      PHOTOPRISM_ADMIN_PASSWORD: "666"          # initial admin password (8-72 characters)
+      PHOTOPRISM_AUTH_MODE: "password"               # authentication mode (public, password)
+      PHOTOPRISM_SITE_URL: "http://localhost:8888/"  # server URL in the format "http(s)://domain.name(:port>
+3. - "/photo:/photoprism/originals"               # Original media files (DO NOT REMOVE)
+```
+
+3.包管理
+
+` docker compose -f docker-compose.yml up`
 
 
 
 # k8s
 
-K8s（Kubernetes）的安装教程可以根据不同的需求和环境有所变化，但通常可以遵循以下基本步骤进行。以下是一个基于当前时间（2024年）的简化版K8s安装教程，适用于使用kubeadm进行Kubernetes集群的快速部署。
+## 一、安装
 
-### 一、准备工作
+### 1.改master和node的ip地址和主机名
 
-1. 硬件与软件需求
-   - 准备至少3台具有2核CPU和4GB及以上内存的服务器，系统推荐使用CentOS 7.x或更高版本。
-   - 确保所有服务器均连接到同一网络，并能相互通信。
-2. 主机配置
-   - 为每台服务器配置唯一的主机名（例如，master1、node1、node2）。
-   - 关闭防火墙和SELinux，以避免潜在的安全限制。
-   - 配置hosts文件，确保所有节点都能通过主机名相互解析。
-   - 禁用Swap分区，因为Kubernetes不建议在启用Swap的节点上运行。
-   - 配置网络，确保桥接的IPv4流量能够传递到iptables的链。
-3. 时间同步
-   - 在所有节点上安装NTP服务，确保时间同步，这对于集群的正常运行非常重要。
+```bash
+master	70
+node-1	71
+node-2	72
+node-3	73
+```
 
-### 二、安装Docker
+### 2.拷贝安装包
 
-由于Kubernetes 1.24版本后不再默认支持Docker，这里以1.23版本为例，仍然需要安装Docker。
+[📎k8s1.29-install-v2.7z](https://www.yuque.com/attachments/yuque/0/2024/7z/47659668/1724159377015-13fdd51e-0419-4d9c-a7f7-cc989a36d1b1.7z)
 
-1. 更新Docker的YUM源
-   - 下载并配置Docker的YUM源。
-2. 安装Docker
-   - 使用yum安装Docker CE（Community Edition）的适当版本。
-3. 配置Docker镜像源
-   - 配置Docker以使用国内的镜像源，以加速镜像的下载。
-4. 启动Docker
-   - 启动Docker服务，并设置为开机自启。
+https://q.185500.xyz:22227/ssd/k8s1.29.7-master-package-ingress.tar.gz
 
-### 三、安装kubeadm、kubelet、kubectl
+https://q.185500.xyz:22227/ssd/k8s1.29.7-node-package-ingress.tar.gz
 
-1. 添加Kubernetes YUM源
-   - 为所有节点添加Kubernetes的YUM源，以便安装kubeadm、kubelet和kubectl。
-2. 安装kubeadm、kubelet、kubectl
-   - 使用yum安装指定版本的kubeadm、kubelet和kubectl。
-3. 启动kubelet
-   - 启用并启动kubelet服务，kubelet是Kubernetes的节点代理，负责Pod的创建、启动和管理。
+### 3.设置master免密登录其它node
 
-### 四、初始化Kubernetes Master节点
+```bash
+ssh-keygen
+ssh-copy-id root@192.168.7.71
+```
 
-1. 下载Kubernetes所需的镜像
-   - 根据kubeadm的配置要求，下载并加载所需的Docker镜像。
-2. 初始化Master节点
-   - 使用kubeadm init命令初始化Master节点，该命令会创建集群所需的各种配置和资源。
-3. 配置kubectl
-   - 将kubeadm init命令输出的kubeconfig文件复制到用户的主目录下，并设置环境变量，以便kubectl能够连接到Kubernetes集群。
+### 4.全部机器上设置/etc/hosts
 
-### 五、添加Worker节点
+```bash
+192.168.7.70  master
+192.168.7.71  node-1
+192.168.7.72  node-2
+192.168.7.73  node-3
+```
 
-1. 在Worker节点上执行kubeadm join命令
-   - 使用kubeadm join命令将Worker节点加入到Kubernetes集群中。该命令需要在Master节点初始化时生成，并复制到Worker节点上执行。
-2. 验证节点状态
-   - 在Master节点上使用kubectl get nodes命令验证所有节点是否已成功加入集群并处于Ready状态。
+### 5.所有节点安装必备软件
 
-### 六、安装网络插件
+```
+apt install -y gnupg2 iptables
+```
 
-1. 选择并安装网络插件
-   - Kubernetes需要网络插件来实现Pod之间的网络通信。常用的网络插件包括Calico、Flannel等。
-   - 根据所选网络插件的安装指南进行安装和配置。
+### 6.所有节点增加仓库密钥
 
-### 七、验证集群功能
+```bash
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 234654DA9A296436
+```
 
-1. 部署示例应用
-   - 部署一个简单的应用（如Nginx）到Kubernetes集群中，以验证集群的功能是否正常。
-2. 监控集群状态
-   - 使用kubectl命令监控集群的状态，包括Pod、Service、Deployment等资源的状态。
+### 7.用脚本安装**kubeadm、kubelet、kubectl**
 
-以上是一个基本的K8s安装教程。请注意，由于Kubernetes的版本和配置选项会不断更新和变化，因此建议在实际部署前查阅最新的官方文档和社区资源以获取最准确的信息。此外，根据具体的业务需求和环境，可能还需要进行额外的配置和优化。
+```bash
+给脚本授予执行权限
+cd k8s-istall-......
+chmod 777 *
+安装之前，关机打快照
+./bear-install.sh 
+如果安装之后是hold on
+apt-mark unhold kubeadm kubectl kubelet
+apt install --reinstall kubeadm kubectl kubelet
+安装完成后，关机打快照
+```
 
+### 8.初始化集群
 
+```bash
+主节点
+cd k8s-install....
+nano initK8s.sh修改里面的master的ip地址，为本次集群的master地址
+然后执行
+./initK8s.sh
+执行initK8s.sh后，用kubectl get node可以看到master节点
+```
 
+### 9.配置环境变量
 
+```bash
+export EDITOR=nano
+kubectl -n kube-system edit cm kube-proxy #进入默认vim,命令模式下/mode搜索 esc :wq 保存
+改 mode： "" >> mode: "ipvs"
+```
 
+### 10.把其它节点加入到主节点集群
 
+```bash
+生成加入代码
+kubeadm token create --print-join-command
+把生成的代码，放到node中执行
 
+现在master执行kubectl get node可以看到节点了，但都是not ready
+```
 
+### 11.批量导入镜像包
 
+```bash
+进入相应的文件夹
+ls *.tar | xargs -I {} ctr -n=k8s.io images import {}
+ctr -n=k8s.io images import  xx.tar
 
+没有则导入
 
+kubectl get pod -A
+kubectl get pod -A -owide
+全部都要是running
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+apt-cache madison kubeadm 
+```
 
 
 
