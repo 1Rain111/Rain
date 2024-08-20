@@ -167,7 +167,7 @@ sudo nmcli con up <连接名称>
 
 `nano /etc/resolv.conf`
 
-​	![img](MyLinux.assets/7777d3bcc6988e01b990d.png)
+​	![img](https://telegraph-image-12r.pages.dev/file/7777d3bcc6988e01b990d.png)
 
 #### hostnamectl 查询和更改系统的主机名以及相关的配置信息
 
@@ -454,7 +454,7 @@ enabled=1
 
 `nano /etc/selinux/config`
 
-![img](MyLinux.assets/1acf8f314ff651108484c.png)
+![img](https://telegraph-image-12r.pages.dev/file/1acf8f314ff651108484c.png)
 
 `reboot`
 
@@ -963,7 +963,17 @@ sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source addre
 
 
 
+
+
+6.
+
 UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaults        0 0
+
+
+
+
+
+
 
 
 
@@ -971,11 +981,11 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 
 
-![72360133909](MyLinux.assets/1723601339097.png)
+![72360133909](C:\Users\rain2\AppData\Local\Temp\1723601339097.png)
 
 
 
-![72360136318](MyLinux.assets/1723601363187.png)
+![72360136318](C:\Users\rain2\AppData\Local\Temp\1723601363187.png)
 
 
 
@@ -983,11 +993,11 @@ UUID=630b91a6-5d0b-4caa-b592-6a63d32bc0db /                       xfs     defaul
 
 新加硬盘作为虚拟分区使用    格式化启用 写入永久挂载
 
-![72360212813](MyLinux.assets/1723602128139.png)
+![72360212813](C:\Users\rain2\AppData\Local\Temp\1723602128139.png)
 
-![72360229000](MyLinux.assets/1723602290000.png)
+![72360229000](C:\Users\rain2\AppData\Local\Temp\1723602290000.png)
 
-​	![72360225531](MyLinux.assets/1723602255314.png)
+​	![72360225531](C:\Users\rain2\AppData\Local\Temp\1723602255314.png)
 
 
 
@@ -1589,7 +1599,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72369223710](MyLinux.assets/1723692237101.png)
+![72369223710](C:\Users\rain2\AppData\Local\Temp\1723692237101.png)
 
 
 
@@ -1597,11 +1607,11 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72369325445](MyLinux.assets/1723693254459.png)
+![72369325445](C:\Users\rain2\AppData\Local\Temp\1723693254459.png)
 
 
 
-![72369344717](MyLinux.assets/1723693447175.png)
+![72369344717](C:\Users\rain2\AppData\Local\Temp\1723693447175.png)
 
 
 
@@ -1625,11 +1635,11 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 创建httpd容器
 
-![72378768626](MyLinux.assets/1723787686267-1723995744820.png)
+![72378768626](C:\Users\rain2\AppData\Local\Temp\1723787686267.png)
 
 进入容器
 
-![72378783250](MyLinux.assets/1723787832508-1723995741108.png)
+![72378783250](C:\Users\rain2\AppData\Local\Temp\1723787832508.png)
 
 
 
@@ -1641,7 +1651,13 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 
 
-![72379110285](MyLinux.assets/1723791102855-1723995736495.png)
+![72379110285](C:\Users\rain2\AppData\Local\Temp\1723791102855.png)
+
+
+
+!72379057925](C:\Users\rain2\AppData\Local\Temp\1723790579254.png
+
+## centOS8-Docker安装
 
 
 
@@ -1652,48 +1668,97 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 # Docker常用命令
 
 ```bash
-查看镜像
-docker images
-查看正在运行的容器
-docker ps
-查看所有容器（包括运行和没有运行的）
-docker ps -a
-删除/启动/停止/强制结束容器
-docker rm/start/stop/kill 容器id
-删除镜像
-docker rmi 镜像id
+1.找镜像
+	(拉取镜像)
+	docker pull nginx  #下载最新版
 
-从镜像启动一个容器
-docker run
+	镜像名：版本名（标签）
+	docker pull nginx:1.20.1
+
+	查看镜像
+	docker images
+
+	删除镜像
+	docker rmi 镜像id/镜像名：版本号
+	
+2.启动容器	
+	从镜像启动一个容器
+	docker run 【OPTIONS】IMAGE [COMMAND] [ARG...]
+	[docker run 设置项 镜像名]  镜像启动运行命令默认有
+	eg:    
+		docker run --name=Mynginx -d nginx
+		
 	-d #在后台运行
 	-p 主机端口:容器端口 #主机与容器端口之间的映射
 	-it #进入容器，必须与bash连用
 	-v 主机目录:容器目录 #主机目录与容器目录之间的映射
-例子:
-docker run -d -p 30001:80 镜像id
-作用:从指定镜像运行一个容器，-d将它放在后台运行,-p将这个容器的80端口映射到主机的30001端口
+		
+	docker run -it 镜像id bash
+        作用:从指定镜像运行一个容器,-it  bash直接进入容器
 
-docker run -it 镜像id bash
-作用:从指定镜像运行一个容器,-it  bash直接进入容器
+	docker run -d -p 30002:80 -v /root/:/usr/local/ 镜像id
+        作用:从指定镜像运行一个容器，-d将它放在后台运行,-p将这个容器的80端口映射到主机的30002端口,并将		 现在这台主机的/root目录映射到创建的这个容器的/usr/local目录,在其中一方目录里面创建修改文件会自         动同步到另一方目录
+    
+	例子:
+     docker run -d -p 30001:80 镜像id
+     作用:从指定镜像运行一个容器，-d将它放在后台运行,-p将这个容器的80端口映射到主机的30001端口
 
-docker exec -it 镜像id bash
-作用：exec参数只用于正在运行的容器,-it bash进入容器
+	
+	查看正在运行的容器
+	docker ps
+	
+	查看所有容器（包括运行和没有运行的）
+	docker ps -a
+	
+	删除/启动/停止/强制结束容器
+	docker rm/start/stop/kill 容器id/名字（--name=...） 
+	docker rm -f 容器id #删除正在运行的应用 
+ 
+   
 
-docker run -d -p 30002:80 -v /root/:/usr/local/ 镜像id
-作用从指定镜像运行一个容器，-d将它放在后台运行,-p将这个容器的80端口映射到主机的30002端口,并将现在这台主机的/root目录映射到创建的这个容器的/usr/local目录,在其中一方目录里面创建修改文件会自动同步到另一方目录
+3.修改容器内容
+
+    docker exec -it 容器id bash
+    作用：exec参数只用于正在运行的容器,-it以交互模式 bash控制台  	
+	 cd /usr/share/nginx/html/ 
+	 echo "....." > index.html
+	 
+	 
+
+   
 ```
 
 
 
 
 
+### 部署相册
+
+1.访问网站`<https://docs.photoprism.app/getting-started/docker-compose/>`
+
+- wget https://dl.photoprism.app/docker/docker-compose.yml
 
 
 
+2.编辑 
 
- 
+- nano docker-compose.yml
 
+```
+1. ports:
+      - "8888:2342"
+2.      
+environment:
+      PHOTOPRISM_ADMIN_USER: "admin"                 # admin login username
+      PHOTOPRISM_ADMIN_PASSWORD: "666"          # initial admin password (8-72 characters)
+      PHOTOPRISM_AUTH_MODE: "password"               # authentication mode (public, password)
+      PHOTOPRISM_SITE_URL: "http://localhost:8888/"  # server URL in the format "http(s)://domain.name(:port>
+3. - "/photo:/photoprism/originals"               # Original media files (DO NOT REMOVE)
+```
 
+3.包管理
+
+` docker compose -f docker-compose.yml up`
 
 # Harbor
 
@@ -1746,17 +1811,76 @@ docker pull 192.168.7.66/xy_2024/xiayu@sha256:41fc97b410595d558767790c4f689f2afe
 
 
 
+# k8s
 
+K8s（Kubernetes）的安装教程可以根据不同的需求和环境有所变化，但通常可以遵循以下基本步骤进行。以下是一个基于当前时间（2024年）的简化版K8s安装教程，适用于使用kubeadm进行Kubernetes集群的快速部署。
 
+### 一、准备工作
 
+1. 硬件与软件需求
+   - 准备至少3台具有2核CPU和4GB及以上内存的服务器，系统推荐使用CentOS 7.x或更高版本。
+   - 确保所有服务器均连接到同一网络，并能相互通信。
+2. 主机配置
+   - 为每台服务器配置唯一的主机名（例如，master1、node1、node2）。
+   - 关闭防火墙和SELinux，以避免潜在的安全限制。
+   - 配置hosts文件，确保所有节点都能通过主机名相互解析。
+   - 禁用Swap分区，因为Kubernetes不建议在启用Swap的节点上运行。
+   - 配置网络，确保桥接的IPv4流量能够传递到iptables的链。
+3. 时间同步
+   - 在所有节点上安装NTP服务，确保时间同步，这对于集群的正常运行非常重要。
 
+### 二、安装Docker
 
+由于Kubernetes 1.24版本后不再默认支持Docker，这里以1.23版本为例，仍然需要安装Docker。
 
+1. 更新Docker的YUM源
+   - 下载并配置Docker的YUM源。
+2. 安装Docker
+   - 使用yum安装Docker CE（Community Edition）的适当版本。
+3. 配置Docker镜像源
+   - 配置Docker以使用国内的镜像源，以加速镜像的下载。
+4. 启动Docker
+   - 启动Docker服务，并设置为开机自启。
 
+### 三、安装kubeadm、kubelet、kubectl
 
+1. 添加Kubernetes YUM源
+   - 为所有节点添加Kubernetes的YUM源，以便安装kubeadm、kubelet和kubectl。
+2. 安装kubeadm、kubelet、kubectl
+   - 使用yum安装指定版本的kubeadm、kubelet和kubectl。
+3. 启动kubelet
+   - 启用并启动kubelet服务，kubelet是Kubernetes的节点代理，负责Pod的创建、启动和管理。
 
+### 四、初始化Kubernetes Master节点
 
+1. 下载Kubernetes所需的镜像
+   - 根据kubeadm的配置要求，下载并加载所需的Docker镜像。
+2. 初始化Master节点
+   - 使用kubeadm init命令初始化Master节点，该命令会创建集群所需的各种配置和资源。
+3. 配置kubectl
+   - 将kubeadm init命令输出的kubeconfig文件复制到用户的主目录下，并设置环境变量，以便kubectl能够连接到Kubernetes集群。
 
+### 五、添加Worker节点
+
+1. 在Worker节点上执行kubeadm join命令
+   - 使用kubeadm join命令将Worker节点加入到Kubernetes集群中。该命令需要在Master节点初始化时生成，并复制到Worker节点上执行。
+2. 验证节点状态
+   - 在Master节点上使用kubectl get nodes命令验证所有节点是否已成功加入集群并处于Ready状态。
+
+### 六、安装网络插件
+
+1. 选择并安装网络插件
+   - Kubernetes需要网络插件来实现Pod之间的网络通信。常用的网络插件包括Calico、Flannel等。
+   - 根据所选网络插件的安装指南进行安装和配置。
+
+### 七、验证集群功能
+
+1. 部署示例应用
+   - 部署一个简单的应用（如Nginx）到Kubernetes集群中，以验证集群的功能是否正常。
+2. 监控集群状态
+   - 使用kubectl命令监控集群的状态，包括Pod、Service、Deployment等资源的状态。
+
+以上是一个基本的K8s安装教程。请注意，由于Kubernetes的版本和配置选项会不断更新和变化，因此建议在实际部署前查阅最新的官方文档和社区资源以获取最准确的信息。此外，根据具体的业务需求和环境，可能还需要进行额外的配置和优化。
 
 
 
