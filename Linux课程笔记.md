@@ -515,7 +515,6 @@ FinalShell登陆终端后，默认的工作目录就是用户的HOME目录
    ```
 
 
-
 ## ps命令
 
 功能：查看进程信息
@@ -532,7 +531,7 @@ FinalShell登陆终端后，默认的工作目录就是用户的HOME目录
 
 ## nmap命令
 
-![image-20221027221241123](https://image-set.oss-cn-zhangjiakou.aliyuncs.com/img-out/2022/10/27/20221027221241.png)
+![-image-20221027221241123](https://image-set.oss-cn-zhangjiakou.aliyuncs.com/img-out/2022/10/27/20221027221241.png)
 
 
 

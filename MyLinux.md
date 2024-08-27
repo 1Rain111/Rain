@@ -56,11 +56,12 @@
     deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-updates main non-free non-free-firmware contrib
     deb https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib
     deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib
-
-
-
-
     ```````
+
+
+
+
+    ​```````
 
   * 阿里云源
 
@@ -481,6 +482,8 @@ enabled=1
 
 
 
+
+
 ## 三、配置网卡方式
 
 ### 方式一：编辑文件
@@ -492,11 +495,13 @@ enabled=1
 ```bash
 IPADDR=192.168.7.66
 NETMASK=255.255.255.0
-DNS1=1.1.1.1
-DNS2=8.8.8.8
 GATEWAY=192.168.7.2
-PREFIX=24
+DNS1=8.8.8.8
 ```
+
+重启网卡
+
+` systemctl restart network`
 
 ### 方式二：nmcli
 
@@ -784,6 +789,32 @@ sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source addre
 
 
 
+
+
+# 常见问题解决
+
+1.ping 不通网络
+
+` nano /etc/sysconfig/network-scripts/ifcfg-ens160`
+
+```bash
+IPADDR=192.168.7.66
+NETMASK=255.255.255.0
+GATEWAY=192.168.7.2
+DNS1=8.8.8.8
+```
+
+` systemctl restart network`
+
+
+
+2.curl 连接失败
+
+```bash
+yum install httpd
+systemctl enable httpd
+systemctl start httpd
+```
 
 
 
@@ -1561,9 +1592,7 @@ LVM提供了非常灵活的磁盘管理功能，特别是在需要动态调整�
 
 
 
-## debian12-Docker
-
-### 安装
+## Docker安装
 
 更新 apt 包索引
 
@@ -1589,7 +1618,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 ###  更换Docker镜像源
 
-- nano /etc/docker/daemon.json 加速器
+- nano /etc/docker/daemon.json 加速器(teacher)
 
 ```bash
 {
@@ -1600,7 +1629,7 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 }
 ```
 
-
+ 
 
 - 网络加速镜像
 
@@ -1625,68 +1654,6 @@ https://patzer0.com/archives/configure-docker-registry-mirrors-with-mirrors-avai
 
   `docker info`
 
-
-
-
-
-
-`ps aux`查看进程
-
-
-
-![72369223710](C:\Users\rain2\AppData\Local\Temp\1723692237101.png)
-
-
-
-
-
-
-
-![72369325445](C:\Users\rain2\AppData\Local\Temp\1723693254459.png)
-
-
-
-![72369344717](C:\Users\rain2\AppData\Local\Temp\1723693447175.png)
-
-
-
-`docker pull nginx`
-
-`docker images`  查看已拉取镜像
-
-
-
-启动一个nginx容器
-
-`docker run -d -p 80:80 -v /data:/usr/share/nginx/html/ 900dca2a61f5 tail -f /dev/null`
-
-进入容器
-
-`docker exec -it ece43bc35f23 bash`
-
-编辑html网页
-
-`nano /data/index.html`
-
-创建httpd容器
-
-![72378768626](C:\Users\rain2\AppData\Local\Temp\1723787686267.png)
-
-进入容器
-
-![72378783250](C:\Users\rain2\AppData\Local\Temp\1723787832508.png)
-
-
-
-`cd etc/apt/sources.list.d---->rm -rf  *  `
-
-`cd /etc/apt--->echo"">sources.list `
-
-
-
-
-
-![72379110285](C:\Users\rain2\AppData\Local\Temp\1723791102855.png)
 
 
 
@@ -1744,16 +1711,117 @@ https://patzer0.com/archives/configure-docker-registry-mirrors-with-mirrors-avai
    
 
 3.修改容器内容
-
+a.进容器内部修改
     docker exec -it 容器id bash
     作用：exec参数只用于正在运行的容器,-it以交互模式 bash控制台  	
 	 cd /usr/share/nginx/html/ 
 	 echo "....." > index.html
 	 
+	 再去ip:port查看变化
+	
+b.挂载数据到外部修改
+docker run --name=mynginx -d  -p 88:80 -v /data/html:/usr/share/nginx/html nginx
+# 修改页面只需要去 主机的 /data/html
 	 
+	 
+	 
+4.镜像打包
+# 将镜像保存成压缩包
+docker save -o abc.tar guignginx:v1.0
 
-   
+# 别的机器加载这个镜像
+docker load -i abc.tar
+
+推送远程仓库
+docker tag local-image:tagname new-repo:tagname
+docker push new-repo:tagname
+
+# 把旧镜像的名字，改成仓库要求的新版名字
+docker tag guignginx:v1.0 leifengyang/guignginx:v1.0
+
+# 登录到docker hub
+docker login       
+
+docker logout（推送完成镜像后退出）
+
+# 推送
+docker push leifengyang/guignginx:v1.0
+
+# 别的机器下载
+docker pull leifengyang/guignginx:v1.0
+
+
+
+配置镜像加速器
+您可以通过修改daemon配置文件/etc/docker/daemon.json来使用加速器
+
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://dqmpfwb6.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+CONTAINER 是你想要从中创建新镜像的容器的 ID 或名称。
+REPOSITORY[:TAG] 是新镜像的仓库名和（可选的）标签。如果省略标签，则默认使用 latest。
+常用选项
+-a, --author=""：设置镜像的作者。
+-c, --change=[]：应用 Dockerfile 指令来创建镜像，这些指令在创建过程中会被添加到镜像中。
+-m, --message=""：设置提交消息，用于说明为什么创建这个镜像。
+-p, --pause=true：在提交前暂停容器运行（默认行为）。如果你不希望暂停容器，可以使用 --pause=false。
+
+  
+ 登录阿里云Docker Registry
+$ docker login --username=aliyun6777838680 registry.cn-hangzhou.aliyuncs.com
+
+docker tag 0108c4bcf94a  registry.cn-hangzhou.aliyuncs.com/rain_2024/test_nginx:1.03
+docker push registry.cn-hangzhou.aliyuncs.com/rain_2024/test_nginx:1.03
 ```
+
+
+
+
+
+```
+将Docker镜像打包到阿里云，主要涉及以下步骤：
+
+一、准备工作
+注册并登录阿里云账户：
+访问阿里云官方网站（如阿里云官网），注册并登录您的账户。
+安装Docker环境：
+确保您的系统上已安装Docker。您可以从Docker官方网站（Docker官网）下载并安装Docker。
+创建阿里云容器镜像服务(ACR)实例：
+登录阿里云控制台，在左侧导航栏中选择“容器镜像服务”（ACR）。
+点击“创建实例”，填写实例名称，选择计费方式和区域，完成实例创建。
+创建命名空间：
+在ACR实例中，点击“命名空间”，创建用于组织镜像的命名空间。
+创建镜像仓库：
+在ACR实例中，点击“镜像仓库”，然后创建新的镜像仓库，并设置仓库的基本信息（如仓库名称、描述、仓库类型等）。
+二、构建Docker镜像
+编写Dockerfile：
+根据您的应用需求，编写Dockerfile以定义镜像的构建过程。Dockerfile应包含基础镜像、构建指令（如安装依赖、复制文件、设置环境变量等）以及启动命令等。
+构建Docker镜像：
+在包含Dockerfile的目录中，运行docker build命令来构建镜像。例如：docker build -t your-image-name:tag .。
+三、将Docker镜像推送到阿里云
+登录阿里云Docker Registry：
+使用docker login命令登录到阿里云Docker Registry。例如：docker login --username=your-aliyun-username registry.cn-hangzhou.aliyuncs.com。注意，这里的用户名通常是您的阿里云账号全名，密码是您在阿里云上设置的密码。
+给镜像打标签：
+在推送镜像到阿里云之前，您需要给镜像打上一个符合阿里云格式的标签。例如：docker tag your-image-name:tag registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image-name:tag。
+推送镜像到阿里云：
+使用docker push命令将镜像推送到阿里云。例如：docker push registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image-name:tag。
+四、验证与测试
+在阿里云ACR实例中，您可以查看已推送的镜像，并进行相关的管理和使用。
+您也可以在本地或其他机器上，通过docker pull命令从阿里云拉取镜像进行测试。
+```
+
+
+
+
+
+
 
 ###  Harbor 镜像管理工具
 
@@ -1841,20 +1909,21 @@ environment:
 
 
 
-# k8s
+## k8s
 
-## 一、安装
+###  一、安装
 
-### 1.改master和node的ip地址和主机名
+#### 1.改master和node的ip地址和主机名
 
 ```bash
+主机名修改hostname -b 主机名
 master	70
 node-1	71
 node-2	72
 node-3	73
 ```
 
-### 2.拷贝安装包
+#### 2.拷贝安装包
 
 [📎k8s1.29-install-v2.7z](https://www.yuque.com/attachments/yuque/0/2024/7z/47659668/1724159377015-13fdd51e-0419-4d9c-a7f7-cc989a36d1b1.7z)
 
@@ -1862,14 +1931,14 @@ https://q.185500.xyz:22227/ssd/k8s1.29.7-master-package-ingress.tar.gz
 
 https://q.185500.xyz:22227/ssd/k8s1.29.7-node-package-ingress.tar.gz
 
-### 3.设置master免密登录其它node
+#### 3.设置master免密登录其它node
 
 ```bash
 ssh-keygen
 ssh-copy-id root@192.168.7.71
 ```
 
-### 4.全部机器上设置/etc/hosts
+#### 4.全部机器上设置/etc/hosts
 
 ```bash
 192.168.7.70  master
@@ -1878,13 +1947,13 @@ ssh-copy-id root@192.168.7.71
 192.168.7.73  node-3
 ```
 
-### 5.所有节点安装必备软件
+#### 5.所有节点安装必备软件
 
-```
+``` bash
 apt install -y gnupg2 iptables
 ```
 
-### 6.所有节点增加仓库密钥
+#### 6.所有节点增加仓库密钥
 
 ```bash
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
@@ -1892,7 +1961,7 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 234654DA9A296436
 ```
 
-### 7.用脚本安装**kubeadm、kubelet、kubectl**
+#### 7.用脚本安装**kubeadm、kubelet、kubectl**
 
 ```bash
 给脚本授予执行权限
@@ -1906,7 +1975,7 @@ apt install --reinstall kubeadm kubectl kubelet
 安装完成后，关机打快照
 ```
 
-### 8.初始化集群
+#### 8.初始化集群
 
 ```bash
 主节点
@@ -1917,7 +1986,7 @@ nano initK8s.sh修改里面的master的ip地址，为本次集群的master地址
 执行initK8s.sh后，用kubectl get node可以看到master节点
 ```
 
-### 9.配置环境变量
+#### 9.配置环境变量
 
 ```bash
 export EDITOR=nano
@@ -1925,7 +1994,7 @@ kubectl -n kube-system edit cm kube-proxy #进入默认vim,命令模式下/mode�
 改 mode： "" >> mode: "ipvs"
 ```
 
-### 10.把其它节点加入到主节点集群
+#### 10.把其它节点加入到主节点集群
 
 ```bash
 生成加入代码
@@ -1935,7 +2004,7 @@ kubeadm token create --print-join-command
 现在master执行kubectl get node可以看到节点了，但都是not ready
 ```
 
-### 11.批量导入镜像包
+#### 11.批量导入镜像包
 
 ```bash
 进入相应的文件夹
@@ -1949,12 +2018,200 @@ kubectl get pod -A -owide
 全部都要是running
 
 apt-cache madison kubeadm 
+
+kubeadm、kubelet、kubectl
+
+```
+
+
+
+### 二、K8s指令
+
+k8s 大规模容器编排系统 分布式系统框架
+
+
+
+一、k8s 特性
+
+1.服务发现负载均衡
+
+2.存储编排
+
+3.自动部署和回滚
+
+4.自动装箱计算
+
+5.自我修复
+
+6.密钥
+
+
+
+二、架构
+
+1.工作方式
+
+N主节点+N工作节点；
+
+![72429067698](MyLinux.assets/1724290676988.png)
+
+
+
+#### 快捷指令
+
+nano /etc/bashrc
+
+```bash
+alias kg='kubectl get -owide '
+alias kgd='kubectl get deployment -owide '
+alias kgs='kubectl get service '
+alias kgi='kubectl get ingress '
+alias kgpall='kubectl get pods --all-namespaces '
+alias kgdall='kubectl get deployment --all-namespaces '
+alias kdd='kubectl delete deployment '
+alias kds='kubectl delete service '
+alias kdi='kubectl delete ingress '
+alias kgp='kubectl get pod -owide '
+alias kgs='kubectl get service '
+alias kgn='kubectl get node -owide '
+alias kgnl='kubectl get node --show-labels '
+alias kd='kubectl delete '
+alias ka='kubectl apply -f '
+alias kdes='kubectl describe '
 ```
 
 
 
 
 
+source <(kubectl completion bash)
+
+#### 常用指令
+
+1.Namespace
+
+```bash
+查看名称空间
+kubectl get ns
+
+查看k8s default命名空间部署的应用
+kubectl get pods
+
+查看k8s 所有命名空间的应用
+kubectl get pods -A
+
+查看某个命名空间的应用
+kubectl get pods -n（namespace） 命名空间
+
+创建命名空间
+kubectl create ns 命名空间
+
+删除命名空间
+kubectl delete ns 命名空间
+
+yaml方式写命名空间
+apiVersion: v1  #版本号
+kind: Namespace #资源类型  
+metadata:       #元数据
+  name: hello   #字段  创建hello命名空间
+```
+
+
+
+```bash
+
+
+查看所有
+kubectl get pod -owide
+
+kubectl get deployment
+查看所有服务器的节点
+kubectl get node -owide
+
+kubectl apply -f
+
+kubectl delete pod --force
+kubectl delete deployment
+kubectl delete node
+ 
+查看所有的api资源
+kubectl api-resources
+
+kubectl describe pod
+
+kubectl describe deployment
+
+ctr -n k8s.io images ls | grep
+ctr -n k8s.io images delete
+ctr -n k8s.io images export
+ctr -n k8s.io images import
+批量删除
+kubectl delete pod nginx-deployment-7c5ddbdf54-4t4d6 --force --grace-period=0 -n default
+
+全部删除
+kgp | awk 'NR>1 {print $1}' | xargs -I {} kubectl delete pod {} --force 
+拉取镜像
+ ctr images pull docker.io/library/httpd:latest --hosts-dir=/etc/containerd/certs.d
+ 
+ 
+
+
+
+查看标签
+kubectl get god --show-labels
+
+删除标签
+kubectl patch pod nginx-deployment-6d8cc96879-hjvcx -p '{"metadata": {"labels": {"table": null}}}'
+
+修改标签
+kubectl label pods nginx-deployment-86c7c55766-xpr6s food=egg --overwrite
+
+用标签筛选和查看
+kubectl get god -l food=redfish --show-labels
+
+创建命名空间
+kubectl create namespace myns
+
+查看命名空间
+kg namespace
+
+kgd -n myns
+
+
+kubectl delete ns myns
+```
+
+### 三、文件共享系统（nfs）
+
+#### k8s(有状态)
+
+master
+
+```bash
+ apt install nfs-kernel-server  -y
+ nano /etc/exports   ---add->  /upload 192.168.7.* (rw,no_root_squash,no_subtree_check)
+ mkdir /upload 
+ chmod 777 /upload
+ ystemctl restart nfs-server.service 
+ systemctl restart nfs-kernel-server.service
+ systemctl enable nfs-server.service 
+```
+
+node
+
+```bash
+apt install nfs-common 
+mkdir /upload 
+chmod 777 /upload
+showmount -e master
+mount -t nfs master:/upload /upload/
+nano /etc/fstab  --add-> master:/upload /upload nfs defaults 0 0 #永久挂载
+reboot
+```
+
+
+
+资源
 
 
 
@@ -1962,4 +2219,52 @@ apt-cache madison kubeadm
 
 
 
+### NodeAffinity
 
+在Kubernetes中，`nodeAffinity` 是一种将Pod调度到具有特定标签的节点上的方法。这有助于确保Pod被部署到满足特定硬件或软件要求的节点上。下面是一个使用 `nodeAffinity` 的YAML文件示例（`NodeAffinity.yaml`），它定义了一个Deployment，该Deployment中的Pod将只被调度到具有特定标签的节点上。
+
+```
+yaml复制代码
+
+apiVersion: apps/v1  
+kind: Deployment  
+metadata:  
+  name: node-affinity-demo  
+  labels:  
+    app: node-affinity-demo  
+spec:  
+  replicas: 3  
+  selector:  
+    matchLabels:  
+      app: node-affinity-demo  
+  template:  
+    metadata:  
+      labels:  
+        app: node-affinity-demo  
+    spec:  
+      containers:  
+      - name: nginx  
+        image: nginx:1.17.1  
+        ports:  
+        - containerPort: 80  
+      affinity:  
+        nodeAffinity:  
+          requiredDuringSchedulingIgnoredDuringExecution:  
+            nodeSelectorTerms:  
+            - matchExpressions:  
+              - key: disktype  
+                operator: In  
+                values:  
+                - ssd  
+  
+# 这个Deployment将会创建Pod，这些Pod只会被调度到标签为disktype=ssd的节点上。  
+# 注意：如果集群中没有节点具有disktype=ssd的标签，那么这些Pod将会处于Pending状态，直到有合适的节点可用。
+```
+
+在这个示例中，`affinity` 字段下的 `nodeAffinity` 定义了Pod的节点亲和性规则。`requiredDuringSchedulingIgnoredDuringExecution` 表示这些规则在调度时是必须的，但在Pod运行期间（比如，节点标签发生变化时）可以被忽略。
+
+- `nodeSelectorTerms` 是一个列表，可以包含多个 `matchExpressions`。这里我们只有一个 `matchExpressions`，它指定了一个键（`disktype`）和一个操作符（`In`），以及一个值列表（`ssd`）。这意味着Pod将只被调度到标签 `disktype=ssd` 的节点上。
+
+如果你想要添加更多的调度条件（比如，同时要求节点具有多个不同的标签），你可以在 `nodeSelectorTerms` 列表中添加更多的 `matchExpressions`，或者在同一 `matchExpressions` 中使用多个键值对（但这通常需要使用 `Exists` 操作符而不是 `In`，因为 `In` 需要一个值列表）。
+
+请注意，根据你的Kubernetes集群的实际情况（比如节点的标签），你可能需要调整这个YAML文件以匹配你的环境。
