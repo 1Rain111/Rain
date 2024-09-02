@@ -1,4 +1,4 @@
-
+x·
 
 # **debian12配置**
 
@@ -60,8 +60,6 @@
 
 
 
-
-    ​```````
 
   * 阿里云源
 
@@ -423,6 +421,45 @@ sudo ufw logging on
 
 
 
+ 使用客户端软件连接linux
+
+ 1、什么是SSH
+
+SSH是一种网络协议，用于计算机之间的加密登录。
+
+2、常用SSH终端工具
+
+```bash
+SecureCRT
+官网：www.vandyke.com SecureCRT是一款支持SSH(SSH1和SSH2)的终端仿真程序，简单地说是Windows下登录UNIX或Linux服务器主机的软件。
+
+XShell
+官网：www.netsarang.com
+
+Xshell是一个强大的安全终端模拟软件，它支持SSH1, SSH2, 以及Microsoft Windows 平台的TELNET 协议。Xshell 通过互联网到远程主机的安全连接以及它创新性的设计和特色帮助用户在复杂的网络环境中享受他们的工作。
+
+Putty
+官网：www.putty.org
+
+PuTTY为一开放源代码软件，主要由Simon Tatham维护，使用MIT licence授权。
+
+MobaXterm
+官网：https://mobaxterm.mobatek.net/
+
+3、使用MobaXterm连接linux
+步骤1：打开软件，点击session
+
+步骤2：在弹出窗口中选择ssh，在 remote host对话框输入要连接的服务器IP地址
+
+步骤3：输入用户名和密码，注意输入密码的时候，屏幕是没有反应的。
+
+步骤4：输入用户密码后回车，看到如下界面，表示已经成功连接
+```
+
+
+
+
+
 
 
 ## 二、配置本地YUM源
@@ -482,6 +519,39 @@ enabled=1
 
 
 
+1.下载安装镜像源
+
+- 使用wget命令下载镜像源，本次使用的源为阿里云镜像：
+
+```shell
+#下载并替换源
+wget https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo -O /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+wget https://mirrors.aliyun.com/repo/epel-archive-8.repo -O /etc/yum.repos.d/epel-archive-8.repo
+```
+
+- 使用命令设置源： 
+
+
+```shell
+sed -i 's/mirrors.cloud.aliyuncs.com/url_tmp/g'  /etc/yum.repos.d/Centos-vault-8.5.2111.repo &&  sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo && sed -i 's/url_tmp/mirrors.aliyun.com/g' /etc/yum.repos.d/Centos-vault-8.5.2111.repo
+sed -i 's/mirrors.aliyun.com/mirrors.cloud.aliyuncs.com/g' /etc/yum.repos.d/epel-archive-8.repo
+
+```
+
+- 其中http://mirrors.cloud.aliyuncs.com需要替换为http://mirrors.aliyun.com，但是官方提供的命令没替换完，并且官方命令针对的是具有公网访问能力的ECS实例，若官方替换命令还是会报错的话，使用以下命令：
+
+```shell
+sed -i 's/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g'  /etc/yum.repos.d/Centos-vault-8.5.2111.repo 
+sed -i 's/mirrors.cloud.aliyuncs.com/mirrors.aliyun.com/g'  /etc/yum.repos.d/epel-archive-8.repo
+```
+
+ 建立yum缓存并测试
+
+- 建立yum缓存
+  `yum clean all && yum makecache #清除原yum缓存建立新缓存`
+- 测试yum命令
+  `yum update -y #使用yum更新测试源可用性` 或者随便装个包试一试。
+
 
 
 ## 三、配置网卡方式
@@ -498,6 +568,38 @@ NETMASK=255.255.255.0
 GATEWAY=192.168.7.2
 DNS1=8.8.8.8
 ```
+
+
+
+查看网卡状态
+
+```shell
+用法一：systemctl  status network
+示例代码：
+#systemctl  status network
+含义：查看网络状态，active表示启用的，活动的。
+```
+
+
+
+ systemctl启动/重启/停止网卡
+
+```shell
+用法一：systemctl start/stop/restart network
+示例代码：
+#systemctl stop network
+含义：停止网卡服务
+
+#systemctl start network
+含义：开启网卡服务
+
+#systemctl restart network
+含义：重启网卡服务
+```
+
+
+
+
 
 重启网卡
 
@@ -658,13 +760,28 @@ sudo systemctl enable firewalld
 
 可以使用以下命令查看 `firewalld` 的状态：
 
+```
+systemctl status firewalld
+```
+
 ```bash
 sudo firewall-cmd --state
 ```
 
+
+
+重载操作
+
+```bash
+# systemctl reload firewalld
+```
+
+
+
 ### 3. 配置基本的防火墙规则
 
 #### 查看当前区域
+
 `firewalld` 使用区域（zone）来管理网络接口。首先，可以查看当前活跃的区域：
 
 ```bash
@@ -815,6 +932,29 @@ yum install httpd
 systemctl enable httpd
 systemctl start httpd
 ```
+
+
+
+## 密钥
+
+```shell
+管理节点与被管理节点建立SSH信任关系
+创建密钥对
+ssh-keygen -t rsa
+
+将本地公钥传输到被管理节点
+ssh-copy-id root@192.168.7.88
+
+查看密钥
+ls .ssh
+
+连接
+ssh 'root@192.168.7.88'
+```
+
+
+
+
 
 
 
@@ -1779,6 +1919,13 @@ $ docker login --username=aliyun6777838680 registry.cn-hangzhou.aliyuncs.com
 
 docker tag 0108c4bcf94a  registry.cn-hangzhou.aliyuncs.com/rain_2024/test_nginx:1.03
 docker push registry.cn-hangzhou.aliyuncs.com/rain_2024/test_nginx:1.03
+
+容器内改内容
+cat <<EOF> index.html
+<
+<
+<
+<EOF
 ```
 
 
@@ -2268,3 +2415,52 @@ spec:
 如果你想要添加更多的调度条件（比如，同时要求节点具有多个不同的标签），你可以在 `nodeSelectorTerms` 列表中添加更多的 `matchExpressions`，或者在同一 `matchExpressions` 中使用多个键值对（但这通常需要使用 `Exists` 操作符而不是 `In`，因为 `In` 需要一个值列表）。
 
 请注意，根据你的Kubernetes集群的实际情况（比如节点的标签），你可能需要调整这个YAML文件以匹配你的环境。
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ansible
+
+an
+
+
+
+1.配置公钥
+
+ssh-keygen 
+
+ssh-copy-id root@ip地址
+
+ssh root@
+
+2.配置文件
+
+```shell
+nano /etc/ansible/hosts
+```
+
+
+
+ping moudule
+
+![	72498629345](MyLinux.assets/1724986293451.png)
+
+
+
+
+
+```shell
+openssl passwd -1 "123"  #加密
+```
+
+
+
